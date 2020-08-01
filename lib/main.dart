@@ -149,6 +149,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var count = 1;
   String m_inputedValue="";
+  String type = "";
 
 
   @override
@@ -185,7 +186,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                          type="時間割";
+                          createTemplateCollection(context, type);
+                          }
                         ),
                         SizedBox(width: 10,),
                         RaisedButton(
@@ -195,7 +199,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            type="QCD";
+                            createTemplateCollection(context, type);
+                          },
                         ),
                       ],
                     ),
@@ -366,14 +373,72 @@ class _MyHomePageState extends State<MyHomePage> {
     );//showdialog
   }//showEditdialog
   createTemplateCollection(context,type){
-    var newname = type;
+    var newName = type;
+    var newKeys = [];
+    var newTmpNameCnt = new TextEditingController(text: type);
+    bool flag = true;
 
     //template指定
-    if(type==){
+    if(type=="時間割"){
+      newKeys = ["時間","月","火","水","木","金","土","日"];
 
-    }else if(type==){
-      
+    }else if(type=="QCD"){
+      newKeys = ["Quality（品質）","Cost（原価）","Delivery（納期）"];
+
     }
+
+    showDialog(
+      context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text("Create New " + type + "Table"),
+                content: Column( //column1
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    TextField(
+                        controller: newTmpNameCnt,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          //labelText: "value input",
+                          hintText: "Table Name",
+                        ),
+                        onChanged: (text) {
+                          // 入力値を変数に格納する。
+                          flag = true;
+                          //setState(() {});
+                        }
+                    ),
+                  ],
+                ),
+
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text("CreateTable"),
+                    onPressed: () {
+                      if (newTmpNameCnt.text.length == 0) {
+                        flag = false;
+                      }
+                      if (flag == true) {
+                        newName = newTmpNameCnt.text;
+                        debugPrint(newName);
+                        debugPrint(newKeys.toString());
+                        addNewCollection(newName, newKeys);
+                        Navigator.of(context).pop();
+                        //showDemoDialog(context);
+                      }
+                    },
+                  ),
+                ],
+
+              );
+            },
+          );
+        }
+
+    );
 
   }
 
